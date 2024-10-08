@@ -1,0 +1,38 @@
+{
+  "name": "eleui_lib",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "@vueuse/integrations": "^11.1.0",
+    "axios": "^1.7.7",
+    "element-plus": "^2.8.4",
+    "pini": "^1.0.5",
+    "pinia": "^2.2.4",
+    "pinia-plugin-persistedstate": "^4.1.1",
+    "universal-cookie": "^7.2.0",
+    "vue": "^3.4.29",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.12.0",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "eslint": "^9.12.0",
+    "eslint-plugin-vue": "^9.28.0",
+    "globals": "^15.10.0",
+    "less": "^4.2.0",
+    "sass-embedded": "^1.79.4",
+    "unplugin-auto-import": "^0.18.3",
+    "unplugin-vue-components": "^0.27.4",
+    "vite": "^5.3.1",
+    "vite-plugin-windicss": "^1.9.3",
+    "vue-eslint-parser": "^9.4.3",
+    "windicss": "^3.5.6"
+  }
+}
