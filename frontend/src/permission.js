@@ -1,16 +1,17 @@
-import router from '~/router';
+import router from '@/router';
 import { useCookies } from '@vueuse/integrations/useCookies';
-// 全局前置守卫，引入到mian.js的
+
+// Global guard, used in main.js
 router.beforeEach((to, from, next) => {
   const token = useCookies().get('admin-token');
 
-  // 没有登录，强制跳转回登录页
+  // If not logged in, redirect to login page
   const isLoginOrReg = to.path === '/login' || to.path === '/reg';
   if (!token && !isLoginOrReg) {
     return next({ path: '/login' });
   }
 
-  // 防止重复登录
+  // Prevent redundant login
   if (token && isLoginOrReg) {
     return next({ path: from.path ? from.path : '/' });
   }

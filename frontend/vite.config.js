@@ -7,7 +7,6 @@ import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import WindiCSS from 'vite-plugin-windicss';
-import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,9 +14,7 @@ export default defineConfig({
     vue(),
     WindiCSS(),
     AutoImport({
-      // 自动导入 Vue 相关函数，如：ref, reactive, toRef 等
       imports: ['vue'],
-
       resolvers: [ElementPlusResolver()],
     }),
     Components({
@@ -35,7 +32,16 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '~': fileURLToPath(new URL('./src', import.meta.url)),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),  // Use '@' for source aliasing
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vue: ['vue'],  // Manually chunk Vue
+        },
+      },
     },
   },
 });

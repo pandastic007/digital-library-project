@@ -1,11 +1,12 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import Index from '~/pages/index.vue';
-import Login from '~/pages/login.vue';
-import NotFound from '~/pages/404.vue';
-import Register from '~/pages/reg.vue';
-import Abstract from '~/pages/abstract.vue';
-import Test from '~/pages/test.vue';
-import Preview from '~/pages/preview.vue';
+import Index from '@/pages/index.vue';
+import Login from '@/pages/login.vue';
+import NotFound from '@/pages/404.vue';
+import Register from '@/pages/reg.vue';
+import Abstract from '@/pages/abstract.vue';
+import Test from '@/pages/test.vue';
+import Preview from '@/pages/preview.vue';
+
 const routes = [
   {
     path: '/',

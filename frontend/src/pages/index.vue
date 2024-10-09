@@ -31,9 +31,7 @@
       <el-tab-pane label="CV" name="fourth"><Cards label="CV" /></el-tab-pane>
       <el-tab-pane label="CV1" name="fifth"><Cards label="CV1" /></el-tab-pane>
       <el-tab-pane label="CV2" name="sixth"><Cards label="CV2" /></el-tab-pane>
-      <el-tab-pane label="CV3" name="seventh"
-        ><Cards label="CV3" />
-      </el-tab-pane>
+      <el-tab-pane label="CV3" name="seventh"><Cards label="CV3" /></el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -44,7 +42,8 @@ import { useCookies } from '@vueuse/integrations/useCookies';
 import { useRouter } from 'vue-router';
 import Cards from '../components/cards.vue';
 import LibHeader from '../components/libHeader.vue';
-import { useLibStore } from '~/store/lib';
+import { useLibStore } from '@/store/lib'; // Updated from '~/store/lib' to '@/store/lib'
+
 const libStore = useLibStore();
 const id = libStore.data.id;
 const searchQuery = ref('');
@@ -53,17 +52,14 @@ const router = useRouter();
 
 const handleSearch = () => {
   console.log('搜索内容:', searchQuery.value);
-  // 在这里添加搜索逻辑
+  // Add search logic here
 };
-
-// const handleClick = (tab, event) => {
-//   console.log(tab, event);
-// };
 
 const goBack = () => {
-  // 在这里添加返回逻辑
+  // Add back navigation logic here
   console.log('返回上一页');
 };
+
 const exit1 = () => {
   const cookie = useCookies();
   cookie.remove('admin-token');
@@ -73,13 +69,11 @@ const exit1 = () => {
 
 <style scoped>
 .header {
-  /* margin-top: 1%; */
   padding-top: 25px;
   padding-bottom: 25px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 .page-container {
-  /* max-width: 1200px; */
   margin: 0 2%;
 }
 .header ::v-deep(.el-page-header__title) {
@@ -88,36 +82,28 @@ const exit1 = () => {
 .search-container {
   margin: 20px 0;
 }
-
 .flex {
   display: flex;
   align-items: center;
 }
-
 .items-center {
   align-items: center;
 }
-
 .mr-3 {
   margin-right: 12px;
 }
-
 .text-large {
   font-size: 18px;
 }
-
 .font-600 {
   font-weight: 600;
 }
-
 .text-sm {
   font-size: 14px;
 }
-
 .ml-2 {
   margin-left: 8px;
 }
-
 .demo-tabs > .el-tabs__content {
   padding: 32px;
   color: #6b778c;
@@ -132,14 +118,12 @@ const exit1 = () => {
   font-size: 20px;
 }
 .search-button {
-  font-size: 18px; /* 增加按钮上文字的字体大小 */
-  height: 50px; /* 增加按钮的高度 */
-  line-height: 50px; /* 使文字垂直居中 */
-  padding: 0 30px; /* 增加按钮的左右padding */
+  font-size: 18px;
+  height: 50px;
+  line-height: 50px;
+  padding: 0 30px;
 }
-
-/* 自定义prefix-icon图标大小 */
 .search-container .el-input__icon {
-  font-size: 20px; /* 调整图标大小 */
+  font-size: 20px;
 }
 </style>

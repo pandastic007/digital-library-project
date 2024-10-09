@@ -1,4 +1,4 @@
-import axios from '~/axios';
+import axios from '@/axios'; // Updated import statement
 
 export function login(username, password) {
   return axios.post('/admin/login', {
@@ -6,6 +6,7 @@ export function login(username, password) {
     password,
   });
 }
+
 export function reg(username, password) {
   return axios.post('/admin/reg', {
     username,

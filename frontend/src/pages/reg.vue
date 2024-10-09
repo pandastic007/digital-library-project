@@ -70,9 +70,8 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-
 import { useRouter } from 'vue-router';
-import { reg } from '~/api/manager';
+import { reg } from '@/api/manager'; // Updated import statement
 
 const router = useRouter();
 
@@ -131,7 +130,7 @@ function submitForm(formEl) {
   formEl.validate(function (valid) {
     if (valid) {
       console.log('submit!');
-      reg(form.username, form.pass)
+      reg(ruleForm.username, ruleForm.pass)
         .then((res) => {
           console.log(res.data.data);
 
@@ -215,16 +214,15 @@ function submitForm(formEl) {
 .container {
   margin-top: 0;
   margin-bottom: 0;
-  position: relative; /* 设置相对定位，作为子元素绝对定位的参考点 */
-  width: 260px; /* 容器的宽度 */
-  height: 25px; /* 容器的高度 */
-  /* border: 1px solid #000; 边框，以便看到容器的范围 */
+  position: relative;
+  width: 260px;
+  height: 25px;
 }
 
 .reg {
-  position: absolute; /* 绝对定位 */
-  top: 0; /* 距离容器顶部0距离 */
-  left: 0; /* 距离容器左边0距离 */
+  position: absolute;
+  top: 0;
+  left: 0;
   color: #b3b3bd;
 }
 </style>
