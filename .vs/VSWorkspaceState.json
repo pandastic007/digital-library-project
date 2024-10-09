@@ -1,11 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\frontend",
-    "\\frontend\\dist",
-    "\\frontend\\src",
-    "\\frontend\\src\\pages"
+    "\\backend"
   ],
-  "SelectedNode": "\\frontend\\src\\pages\\preview.vue",
+  "SelectedNode": "\\backend\\index.js",
   "PreviewInSolutionExplorer": false
 }
