@@ -1,7 +1,11 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\frontend",
+    "\\frontend\\dist",
+    "\\frontend\\src",
+    "\\frontend\\src\\pages"
   ],
-  "SelectedNode": "\\firebase.json",
+  "SelectedNode": "\\frontend\\src\\pages\\preview.vue",
   "PreviewInSolutionExplorer": false
 }

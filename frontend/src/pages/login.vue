@@ -18,9 +18,10 @@
         :rules="rules"
         :model="form"
         class="w-[250px]"
-        @keyup.enter="onSubmit()">
-        <el-form-item prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名">
+        @keyup.enter="onSubmit()"
+      >
+        <el-form-item prop="email">
+          <el-input v-model="form.email" placeholder="请输入邮箱">
             <template #prefix>
               <el-icon><user /></el-icon>
             </template>
@@ -31,7 +32,8 @@
             type="password"
             v-model="form.password"
             placeholder="请输入密码"
-            show-password>
+            show-password
+          >
             <template #prefix>
               <el-icon><lock /></el-icon>
             </template>
@@ -44,8 +46,9 @@
             class="w-[250px]"
             type="primary"
             @click="onSubmit"
-            >登 录</el-button
           >
+            登 录
+          </el-button>
         </el-form-item>
       </el-form>
       <div class="container">
@@ -60,40 +63,32 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
-import { login } from '@/api/manager'; // Updated import statement
+import { auth } from '@/firebase'; // Import Firebase authentication instance
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useCookies } from '@vueuse/integrations/useCookies';
-import { useLibStore } from '@/store/lib'; // Updated import statement
 
 const router = useRouter();
 
-// do not use same name with ref
 const form = reactive({
-  username: '',
+  email: '',
   password: '',
 });
 
 const rules = {
-  username: [
-    {
-      required: true,
-      message: '用户名不能为空',
-      trigger: 'blur',
-    },
-    {
-      min: 3,
-      max: 8,
-      message: 'Length should be 3 to 8',
-      trigger: 'blur',
-    },
+  email: [
+    { required: true, message: '邮箱不能为空', trigger: 'blur' },
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
   ],
   password: [
+    { required: true, message: '密码不能为空', trigger: 'blur' },
     {
-      required: true,
-      message: '密码不能为空',
+      min: 8,
+      message: '密码长度不能少于 8 位',
       trigger: 'blur',
     },
   ],
 };
+
 const gotoReg = () => {
   router.push('/reg');
 };
@@ -104,9 +99,12 @@ const onSubmit = () => {
     if (!valid) {
       return false;
     }
-    login(form.username, form.password)
-      .then((res) => {
-        console.log(res.data.data);
+
+    // Use Firebase Authentication for login
+    signInWithEmailAndPassword(auth, form.email, form.password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
 
         // 提示成功
         ElNotification({
@@ -117,16 +115,15 @@ const onSubmit = () => {
         });
 
         const cookie = useCookies();
-        cookie.set('admin-token', res.data.data.token);
-        const libStore = useLibStore();
-        libStore.save(1);
-        // 跳转到后台首页
-        router.push('/');
+        cookie.set('admin-token', user.uid); // Set user token as a cookie
+
+        // Redirect to index page after successful login
+        router.push('/index');
       })
       .catch((err) => {
         ElNotification({
           title: 'Error',
-          message: err.response.data.msg || '请求失败',
+          message: err.message || '请求失败',
           type: 'error',
           duration: 3000,
         });

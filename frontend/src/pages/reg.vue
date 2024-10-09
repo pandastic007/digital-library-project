@@ -3,7 +3,7 @@
     <el-col :lg="16" :md="12" class="left">
       <div>
         <div>欢迎光临</div>
-        <div>此站点是《vue3 + vite实战商城后台开发》视频课程的演示地址</div>
+        <div>此站点是xxxxxxxxxxx</div>
       </div>
     </el-col>
     <el-col :lg="8" :md="12" class="right">
@@ -18,35 +18,44 @@
         :rules="rules"
         :model="ruleForm"
         class="w-[250px]"
-        @keyup.enter="onSubmit()">
-        <el-form-item prop="username">
-          <el-input v-model="ruleForm.username" placeholder="请输入用户名">
+        @keyup.enter="submitForm"
+      >
+        <el-form-item prop="email">
+          <el-input v-model="ruleForm.email" placeholder="请输入邮箱">
             <template #prefix>
               <el-icon><user /></el-icon>
             </template>
           </el-input>
         </el-form-item>
-        <el-form-item prop="pass">
+        <el-form-item prop="password">
           <el-input
             type="password"
-            v-model="ruleForm.pass"
+            v-model="ruleForm.password"
             placeholder="请输入密码"
-            show-password>
+            show-password
+          >
             <template #prefix>
               <el-icon><lock /></el-icon>
             </template>
           </el-input>
         </el-form-item>
-        <el-form-item prop="checkPass">
+        <el-form-item prop="confirmPassword">
           <el-input
             type="password"
-            v-model="ruleForm.checkPass"
-            placeholder="请输入密码again"
-            show-password>
+            v-model="ruleForm.confirmPassword"
+            placeholder="请再次输入密码"
+            show-password
+          >
             <template #prefix>
               <el-icon><lock /></el-icon>
             </template>
           </el-input>
+        </el-form-item>
+        <el-form-item prop="role">
+          <el-radio-group v-model="ruleForm.role">
+            <el-radio-button label="student">Student</el-radio-button>
+            <el-radio-button label="teacher">Teacher</el-radio-button>
+          </el-radio-group>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -54,15 +63,16 @@
             color="#626aef"
             class="w-[250px]"
             type="primary"
-            @click="submitForm(ruleFormRef)"
-            >注 册</el-button
+            @click="submitForm"
           >
+            注 册
+          </el-button>
         </el-form-item>
       </el-form>
       <div class="container">
-        <el-button :type="info" text class="reg" @click="gotoLogin"
-          >返回登录</el-button
-        >
+        <el-button :type="info" text class="reg" @click="gotoLogin">
+          已有账号？点击登录
+        </el-button>
       </div>
     </el-col>
   </el-row>
@@ -71,93 +81,107 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
-import { reg } from '@/api/manager'; // Updated import statement
+import { db, auth } from '@/firebase'; // Import Firebase Firestore and Authentication
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
 
 const router = useRouter();
 
-// do not use same name with ref
 const ruleForm = reactive({
-  username: '',
-  pass: '',
-  checkPass: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  role: '',
 });
-const gotoLogin = () => {
-  router.push('/login');
-};
 
-const ruleFormRef = ref(null);
-function validatePass(rule, value, callback) {
-  if (value === '') {
-    callback(new Error('Please input the password'));
-  } else {
-    if (ruleForm.checkPass !== '') {
-      if (!ruleFormRef.value) return;
-      ruleFormRef.value.validateField('checkPass');
-    }
-    callback();
-  }
-}
-
-function validatePass2(rule, value, callback) {
-  if (value === '') {
-    callback(new Error('Please input the password again'));
-  } else if (value !== ruleForm.pass) {
-    callback(new Error("Two inputs don't match!"));
-  } else {
-    callback();
-  }
-}
 const rules = {
-  username: [
+  email: [
+    { required: true, message: '邮箱不能为空', trigger: 'blur' },
+    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
+  ],
+  password: [
+    { required: true, message: '密码不能为空', trigger: 'blur' },
     {
-      required: true,
-      message: '用户名不能为空',
-      trigger: 'blur',
-    },
-    {
-      min: 3,
-      max: 8,
-      message: 'Length should be 3 to 8',
+      min: 8,
+      message: '密码长度不能少于 8 位，并且包含大小写字母、数字和符号',
       trigger: 'blur',
     },
   ],
-  pass: [{ validator: validatePass, trigger: 'blur' }],
-  checkPass: [{ validator: validatePass2, trigger: 'blur' }],
+  confirmPassword: [
+    { required: true, message: '请再次输入密码', trigger: 'blur' },
+    {
+      validator: (rule, value, callback) => {
+        if (value !== ruleForm.password) {
+          callback(new Error('两次输入的密码不一致'));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'blur',
+    },
+  ],
+  role: [{ required: true, message: '请选择用户角色', trigger: 'change' }],
 };
 
-function submitForm(formEl) {
-  if (!formEl) return;
-  formEl.validate(function (valid) {
-    if (valid) {
-      console.log('submit!');
-      reg(ruleForm.username, ruleForm.pass)
-        .then((res) => {
-          console.log(res.data.data);
+const ruleFormRef = ref(null);
 
-          // 提示成功
-          ElNotification({
-            title: 'Success',
-            message: '注册成功',
-            type: 'success',
-            duration: 3000,
-          });
+const submitForm = async () => {
+  ruleFormRef.value.validate(async (valid) => {
+    if (!valid) return;
 
-          // 跳转到
-          router.push('/login');
-        })
-        .catch((err) => {
-          ElNotification({
-            title: 'Error',
-            message: err.response.data.msg || '请求失败',
-            type: 'error',
-            duration: 3000,
-          });
+    try {
+      // Check if email already exists
+      const usersRef = collection(db, 'Users');
+      const q = query(usersRef, where('email', '==', ruleForm.email));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        ElNotification({
+          title: 'Error',
+          message: '邮箱已存在，请更换其他邮箱',
+          type: 'error',
+          duration: 3000,
         });
-    } else {
-      console.log('error submit!');
+        return;
+      }
+
+      // Register user with Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        ruleForm.email,
+        ruleForm.password
+      );
+
+      // Add user details to Firestore
+      await addDoc(usersRef, {
+        uid: userCredential.user.uid,
+        email: ruleForm.email,
+        role: ruleForm.role,
+      });
+
+      ElNotification({
+        title: 'Success',
+        message: '注册成功',
+        type: 'success',
+        duration: 3000,
+      });
+
+      // Redirect to login page after successful registration
+      router.push('/login');
+    } catch (error) {
+      ElNotification({
+        title: 'Error',
+        message: error.message || '注册失败',
+        type: 'error',
+        duration: 3000,
+      });
     }
   });
-}
+};
+
+const gotoLogin = () => {
+  router.push('/login');
+};
 </script>
 
 <style scoped>
